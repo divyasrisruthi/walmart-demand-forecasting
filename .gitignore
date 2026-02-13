@@ -1,3 +1,13 @@
+# Don't upload these to GitHub
+*.pkl
+data/raw/*.csv
+models/*.pkl
+
+# Python
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
+
+# OS
 .DS_Store
+Thumbs.db

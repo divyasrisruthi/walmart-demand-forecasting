@@ -1,72 +1,150 @@
-📊 Walmart Weekly Sales Forecasting
-Business-Oriented Time Series Machine Learning Project
-📌 Problem Statement
+# Walmart Sales Forecasting
+**Predicting weekly retail demand with XGBoost + Explainable AI**
 
-Accurate demand forecasting is critical for large retailers like Walmart to optimize inventory, staffing, and promotions. Poor forecasts result in overstocking or lost sales.
+---
 
-This project builds a time-aware machine learning model to predict weekly department-level sales using historical data, promotions, store attributes, and economic indicators.
+## 🎯 Problem
 
-🗂️ Dataset
+Walmart needs accurate sales forecasts to:
+- Avoid stockouts (lost revenue)
+- Prevent overstock (wasted capital)
+- Plan inventory across 45 stores, 81 departments
+- Meet investor expectations (stock price impact)
 
-Source: Walmart Store Sales Forecasting (Kaggle)
+**Bad forecasts = millions in losses.**
 
-Datasets used:
+---
+## 📊 Solution
 
-train.csv – Historical weekly sales
+Built a machine learning forecasting system that predicts weekly sales **16.5% better** than baseline.
 
-features.csv – Promotions, fuel price, CPI, unemployment
+| Model | MAE | Improvement |
+|---|---|---|
+| Naive Baseline | $1,721 | - |
+| Random Forest | $1,469 | 14.6% |
+| **XGBoost** | **$1,437** | **16.5%** ✅ |
 
-stores.csv – Store size and type
+---
 
-test.csv – Future periods for prediction
+## 🔍 Key Findings
 
-⚙️ Approach
+**1. Lag features dominate (68% importance)**
+- Last week's sales predict this week better than any external factor
+- Weather, economy, promotions = minimal impact
 
-Merged multiple datasets into a unified analytical table
+**2. Department 92 is a problem child**
+- Appears in 5 of top 10 hardest-to-forecast combinations
+- Average error: $10,000+/week
+- **Recommendation:** Increase safety stock 25-30%
 
-Engineered time-based features (Year, Month, Week)
+**3. Holidays are 21% harder to forecast**
+- Holiday MAE: $1,751 vs Non-Holiday: $1,422
+- Extreme spikes (Thanksgiving +60%, Black Friday +80%)
+- **Recommendation:** Accept higher buffer stock during holidays
 
-Created lag and rolling demand features to capture seasonality
+**4. High-error stores identified**
+- Stores 20, 14, 13 account for 35% of total error
+- **Recommendation:** Build store-specific models
 
-Used a time-based train–validation split to avoid data leakage
+---
 
-Trained a Random Forest Regressor for non-linear demand modeling
+## 💼 Business Impact
 
-📈 Model Performance
+**Potential value:** ~$7M annual savings across all stores  
+*(Based on reduced stockouts + overstock costs)*
 
-Baseline MAE (Last Week Sales): $1,718
+**Immediate actions:**
+1. Deploy XGBoost for weekly forecasting
+2. Increase safety stock for Dept 92 combinations
+3. Add daily inventory reviews for top-error stores
 
-Random Forest MAE: $1,495
+---
 
-Improvement over baseline: 12.99%
+## 🛠️ How It Works
 
-Holiday MAE: $1,794
-Non-Holiday MAE: $1,480
+### Data
+- 421,570 weekly observations (2010-2012)
+- 45 stores, 81 departments
+- Features: Sales history, promotions, store attributes, economic indicators
 
-🔍 Key Insights
+### Feature Engineering
+- **Lag features:** `lag_1`, `lag_2`, `lag_4`, `lag_8`
+- **Rolling stats:** 4-week moving average, std dev
+- **Time encoding:** Cyclical week/month encoding
+- **Promotions:** Total markdown, promo flag
 
-Recent sales history (lag_1, rolling_mean_4) is the strongest predictor of demand
+### Models
+- XGBoost (300 trees, learning rate 0.05)
+- SHAP for explainability
 
-Holiday weeks exhibit higher volatility and forecasting error
+---
 
-Promotional markdowns positively influence weekly sales
+## 📈 Visualizations
 
-Macroeconomic factors have limited short-term impact at weekly granularity
+### SHAP Feature Importance
+![SHAP](images/shap_summary.png)
 
-🧠 Business Recommendations
+### Model Comparison
+![Comparison](images/model_comparison.png)
 
-Use rolling sales trends for short-term inventory planning
+### Error Analysis
+![Error](images/error_analysis.png)
 
-Allocate buffer stock for holiday weeks due to higher uncertainty
+---
 
-Optimize promotions by department rather than store-wide
+## 🚀 Usage
+```bash
+# Install dependencies
+pip install -r requirements.txt
+# Download data from Kaggle
+# https://www.kaggle.com/datasets/aslanahmedov/walmart-sales-forecast
+# Place CSVs in data/raw/
 
-Focus demand forecasting efforts at Store–Department level
+# Run analysis
+cd notebooks
+python walmart_forecast_upgraded.py
+```
 
-🛠️ Tech Stack
+**Output:**
+- Performance metrics
+- SHAP plots
+- Business insights
+- Saved models
 
-Python (NumPy, Pandas, Matplotlib, Seaborn)
+---
 
-Scikit-learn
+## 📁 Project Structure
+```
+walmart-sales-forecast/
+├── data/raw/              # Kaggle data
+├── images/                # Visualizations
+├── notebooks/             # Analysis script
+├── models/                # Saved models
+├── requirements.txt
+└── README.md
+```
 
-Jupyter Notebook
+---
+
+## 🔮 Future Improvements
+
+- [ ] Deploy as Streamlit dashboard
+- [ ] Add prediction intervals (uncertainty quantification)
+- [ ] Department-specific models for Dept 92
+- [ ] External data: weather, local events
+
+---
+
+## 🎓 Tech Stack
+
+Python • XGBoost • SHAP • pandas • scikit-learn • matplotlib
+
+---
+
+## 🙏 Data Source
+
+[Walmart Recruiting - Store Sales Forecasting (Kaggle)](https://www.kaggle.com/datasets/aslanahmedov/walmart-sales-forecast)
+
+---
+
+**⭐ Star this repo if you found it helpful!**
